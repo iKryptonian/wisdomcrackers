@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 80%;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* NEW FIX: Leaves space for the sticky header on large screens */
+    scroll-padding-top: 110px; 
+  }
+
+  /* NEW FIX: Leaves a slightly smaller space for mobile screens */
+  @media (max-width: 640px) {
+    html {
+      scroll-padding-top: 60px; 
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+#invoice-content {
+  width: 794px !important;
+  max-width: 794px !important;
+  margin: 0 auto;
+  font-family: 'Courier New', monospace;
+}
+
+#invoice-content * {
+  box-sizing: border-box !important;
+}
+
+#invoice-content table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+#invoice-content td,
+#invoice-content th {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+@media (max-width: 900px) {
+  #invoice-content {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  #invoice-content {
+    display: block !important;
+    visibility: visible !important;
+    width: 794px !important;
+    max-width: 794px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    position: relative !important;
+    all: revert;
+  }
+
+  #invoice-content * {
+    visibility: visible !important;
+  }
+}
+
+/* Disable text selection and mobile long-press copy menu */
+body {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  -webkit-touch-callout: none; /* iOS Safari */
+}
+
+/* IMPORTANT: Re-enable selection for inputs so your search bar still works! */
+input, textarea {
+  -webkit-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}
