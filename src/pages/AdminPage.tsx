@@ -5,7 +5,7 @@ import { Product } from '../types';
 import { Plus, Pencil, Trash2, Upload, X, Check, Lock, ArrowLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-const ADMIN_PASSWORD = 'skt2024admin';
+const ADMIN_PASSWORD = 'sktadmin';
 
 const emptyForm = {
   name: '', content: '', image: '',
@@ -42,7 +42,7 @@ const AdminPage: React.FC = () => {
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) { setAuthed(true); setPwError(''); }
     else setPwError('Incorrect password');
-  };
+  }; 
 
   useEffect(() => { if (authed) loadProducts(); }, [authed]);
 
@@ -339,4 +339,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage;
+export default AdminPage; 

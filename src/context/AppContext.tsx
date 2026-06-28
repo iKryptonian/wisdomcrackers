@@ -4,7 +4,6 @@ import { products as hardcodedProducts } from '../data/products';
 import { supabase } from '../lib/supabase';
 
 interface AppContextType {
-  // Add this line inside AppContextType interface
   productsLoading: boolean;
   products: Product[];
   quantities: Record<number, number>;
@@ -45,26 +44,23 @@ const formatDate = () => {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts]         = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [dbOnline, setDbOnline]     = useState(false);
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [dbOnline, setDbOnline]         = useState(false);
+  const [quantities, setQuantities]     = useState<Record<number, number>>({});
+  const [isCartOpen, setIsCartOpen]     = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails | null>(null);
-  const [currentPage, setCurrentPage] = useState<PageView>('home');
-  const [enquiryNumber] = useState(generateEnquiryNumber);
-  const [orderDate] = useState(formatDate);
+  const [currentPage, setCurrentPage]   = useState<PageView>('home');
+  const [enquiryNumber]                 = useState(generateEnquiryNumber);
+  const [orderDate]                     = useState(formatDate);
 
   const fetchProducts = useCallback(async () => {
-    setProductsLoading(true);
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('id');
-
-      console.log('DB fetch result:', { data, error });
 
       if (!error && data && data.length > 0) {
         const mapped = data.map(p => ({
@@ -78,26 +74,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           unit: p.unit ?? '',
           category: p.category ?? '',
         }));
-        console.log('First mapped product:', mapped[0]); // ← moved here
         setProducts(mapped);
         setDbOnline(true);
       } else {
-        console.log('Using hardcoded — reason:', error ?? 'empty data');
         setProducts(hardcodedProducts);
         setDbOnline(false);
       }
     } catch (e) {
-      console.log('Fetch error:', e); // ← removed mapped[0] from here
+      console.log('Fetch error:', e);
       setProducts(hardcodedProducts);
       setDbOnline(false);
-      
     }
     setProductsLoading(false);
   }, []);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (currentPage === 'home') {
       fetchProducts();
     }
@@ -167,7 +160,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       dbOnline,
       refreshProducts: fetchProducts,
     }}>
-      {children} 
+      {children}
     </AppContext.Provider>
   );
 };
@@ -176,4 +169,4 @@ export const useApp = () => {
   const ctx = useContext(AppContext);
   if (!ctx) throw new Error('useApp must be used within AppProvider');
   return ctx;
-};
+}; 

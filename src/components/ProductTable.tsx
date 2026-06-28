@@ -15,25 +15,20 @@ const ProductTable: React.FC = () => {
   // Extract categories (Removes blanks and 'Other')
   const categoriesInOrder = useMemo(() => {
     return Array.from(new Set(
-      products
-        .map(p => p.category)
-        .filter((cat): cat is string => Boolean(cat) && cat !== 'Other')
+      products.map(p => p.category).filter((cat): cat is string => Boolean(cat) && cat !== 'Other')
     ));
-  }, []);
+  }, [products]); // ← add products
 
-  // Filter products by Search and Category
   const filtered = useMemo(() =>
     products.filter(p => {
-      const productCat = p.category || ''; 
-      const matchesSearch = 
+      const productCat = p.category || '';
+      const matchesSearch =
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.content.toLowerCase().includes(search.toLowerCase());
-      
       const matchesCategory = selectedCategory === 'All' || productCat === selectedCategory;
-      
       return matchesSearch && matchesCategory;
     }),
-    [search, selectedCategory]
+    [search, selectedCategory, products] // ← add products
   );
 
   // Group by Category (Uncategorized pushed to bottom)
