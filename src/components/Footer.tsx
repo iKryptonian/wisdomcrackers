@@ -1,35 +1,27 @@
 import React from 'react';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { shopConfig } from '../config/shopConfig';
+import { useApp } from '../context/AppContext';
+import type { PageView } from '../types';
 
 const Footer: React.FC = () => {
-  
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    
-    if (element) {
-      const headerOffset = 100; 
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+  const { setCurrentPage } = useApp();
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
+  const handleLinkClick = (target: PageView) => {
+    setCurrentPage(target);
+    window.scrollTo({ top: 0 });
   };
 
-  const quickLinks = [
-    { name: 'Home', id: 'home' },
-    { name: 'About Us', id: 'about' },
-    { name: 'Quick Purchase', id: 'products' }, 
-    { name: 'Safety Tips', id: 'safety' },
-    { name: 'Contact Us', id: 'contact' }
+  const quickLinks: { name: string; target: PageView }[] = [
+    { name: 'Home', target: 'home' },
+    { name: 'About Us', target: 'about' },
+    { name: 'Quick Purchase', target: 'products' },
+    { name: 'Safety Tips', target: 'safety' },
+    { name: 'Contact Us', target: 'contact' },
   ];
 
   return (
-    <footer className="bg-red-900 text-white">
+    <footer className="bg-orange-600 text-white">
       {/* Kept pb-28 for the mobile sticky cart bar, but increased padding heavily for md (desktop) */}
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-28 md:pt-16 md:pb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
@@ -38,7 +30,7 @@ const Footer: React.FC = () => {
             <div className="flex items-center gap-2 md:gap-4 mb-3 md:mb-6">
               {/* Increased desktop logo to w-16 h-16 */}
               <img 
-                src="/skt_logo.png" 
+                src="/wc_logo.png" 
                 alt={`${shopConfig.name} Logo`} 
                 className="w-10 h-10 md:w-16 md:h-16 object-contain rounded-full shadow-[0_0_10px_rgba(234,179,8,0.3)]"
                 onError={(e) => {
@@ -54,7 +46,6 @@ const Footer: React.FC = () => {
             {/* Increased desktop paragraph to text-base */}
             <p className="text-white-600 text-[11px] md:text-base leading-relaxed">
               Premium quality firecrackers sourced directly from Sivakasi.
-              Celebrating India's festivals with joy and safety since 2016.
             </p>
           </div>
 
@@ -64,13 +55,12 @@ const Footer: React.FC = () => {
             <ul className="space-y-1.5 md:space-y-3 text-[11px] md:text-base text-white-200">
               {quickLinks.map(link => (
                 <li key={link.name}>
-                  <a
-                    href={`#${link.id}`}
-                    onClick={(e) => scrollToSection(e, link.id)}
+                  <button
+                    onClick={() => handleLinkClick(link.target)}
                     className="hover:text-yellow-400 transition-colors cursor-pointer"
                   >
                     {link.name}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -102,7 +92,7 @@ const Footer: React.FC = () => {
 
         {/* Increased top border spacing and text size for desktop copyright row */}
         <div className="border-t border-red-800 mt-6 pt-4 md:mt-10 md:pt-8 flex flex-col sm:flex-row justify-between items-center gap-2 md:gap-4 text-[10px] md:text-sm text-gray-300">
-          <p className="text-center sm:text-left">&copy; {new Date().getFullYear()} {shopConfig.name}. All rights reserved.</p>
+          <p className="text-center sm:text-left">&copy; 2026 {shopConfig.name}. All rights reserved.</p>
           <p className="text-center sm:text-right">Burst responsibly. Follow all safety guidelines.</p>
         </div>
       </div>

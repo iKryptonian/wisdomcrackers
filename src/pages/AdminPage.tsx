@@ -5,7 +5,7 @@ import { Product } from '../types';
 import { Plus, Pencil, Trash2, Upload, X, Check, Lock, ArrowLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-const ADMIN_PASSWORD = 'sktadmin';
+const ADMIN_PASSWORD = 'sanjay@wisdomadmin';
 
 const emptyForm = {
   name: '', content: '', image: '',
@@ -153,7 +153,7 @@ const AdminPage: React.FC = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
         <div className="flex justify-center mb-4">
-          <Lock className="w-10 h-10 text-red-700" />
+          <Lock className="w-10 h-10 text-orange-600" />
         </div>
         <h2 className="text-xl font-bold text-center text-gray-800 mb-6">Admin Login</h2>
         <input
@@ -163,9 +163,9 @@ const AdminPage: React.FC = () => {
           placeholder="Enter admin password"
           className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 mb-3"
         />
-        {pwError && <p className="text-red-500 text-xs mb-3">{pwError}</p>}
+        {pwError && <p className="text-orange-500 text-sm mb-3">{pwError}</p>}
         <button onClick={handleLogin}
-          className="w-full bg-red-700 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition">
+          className="w-full bg-orange-500 hover:bg-orange-500 text-white font-bold py-3 rounded-lg transition">
           Login
         </button>
       </div>
@@ -176,21 +176,21 @@ const AdminPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top bar */}
-      <div className="bg-red-800 text-white px-4 py-3 flex items-center justify-between">
+      <div className="bg-orange-600 text-white px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setCurrentPage('home')}
-            className="p-1 hover:bg-red-700 rounded-lg">
+            className="p-1 hover:bg-orange-600 rounded-lg">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="font-bold text-lg">Admin Panel</h1>
-            <p className="text-xs text-red-200">
+            <p className="text-xs text-orange-200">
               {dbOnline ? '🟢 Supabase DB active' : '🟡 Showing hardcoded data — DB empty'}
             </p>
           </div>
         </div>
         <button onClick={openAdd}
-          className="flex items-center gap-1.5 bg-white text-red-700 font-bold px-4 py-2 rounded-lg text-sm hover:bg-red-50">
+          className="flex items-center gap-1.5 bg-white text-orange-600 font-bold px-4 py-2 rounded-lg text-sm hover:bg-orange-200">
           <Plus className="w-4 h-4" /> Add Product
         </button>
       </div>
@@ -199,7 +199,7 @@ const AdminPage: React.FC = () => {
       <div className="px-4 py-3 flex flex-wrap gap-2 bg-white border-b">
         <input type="text" placeholder="Search products..."
           value={search} onChange={e => setSearch(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 flex-1 min-w-[180px]"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 flex-1 min-w-[180px]"
         />
         <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
           className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none bg-white">
@@ -213,16 +213,16 @@ const AdminPage: React.FC = () => {
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {loading ? (
             <div className="col-span-full text-center py-20">
-                <div className="w-8 h-8 border-4 border-red-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                 <p className="text-gray-400 text-sm">Loading products from database...</p>
             </div>
         ) : dbError ? (
             <div className="col-span-full text-center py-20">
-                <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-md mx-auto">
-                    <p className="text-red-600 font-semibold mb-2">⚠️ {dbError}</p>
+                <div className="bg-orange-200 border border-orange-200 rounded-xl p-6 max-w-md mx-auto">
+                    <p className="text-orange-600 font-semibold mb-2">⚠️ {dbError}</p>
                     <button
                         onClick={loadProducts}
-                        className="mt-3 bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600"
+                        className="mt-3 bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-600"
                     >
                         Retry
                     </button>

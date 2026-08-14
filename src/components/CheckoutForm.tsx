@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, FileText, User, Phone, Mail, Home, MapPin, Info, Building, Map } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { statesCities } from '../data/locations';
+/* import { statesCities } from '../data/locations'; */
 
 const CheckoutForm: React.FC = () => {
   const {
@@ -23,12 +23,6 @@ const CheckoutForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // 1. Get the cities for the selected state
-  const cities = form.state ? statesCities[form.state] || [] : [];
-  
-  // 2. DYNAMIC LOGIC: Show dropdown ONLY if we have cities AND it is not Tamil Nadu
-  const showCityDropdown = cities.length > 0 && form.state !== 'Tamil Nadu';
 
   // --- MOBILE BACK BUTTON FIX ---
   useEffect(() => {
@@ -65,7 +59,7 @@ const CheckoutForm: React.FC = () => {
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Enter valid email';
     if (!form.address.trim()) errs.address = 'Address is required';
     if (!form.state) errs.state = 'State is required';
-    if (!form.city.trim()) errs.city = 'City is required';
+    if (!form.city.trim()) errs.city = 'City and District required';
     if (!form.pincode.trim() || !/^\d{6}$/.test(form.pincode)) errs.pincode = 'Enter a valid 6-digit PIN code';
     
     setErrors(errs);
@@ -116,7 +110,7 @@ const CheckoutForm: React.FC = () => {
           isCheckoutOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-red-800 to-red-700 text-white flex-shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-orange-800 to-orange-700 text-white flex-shrink-0">
           <div className="flex items-center gap-2 sm:gap-3">
             <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300" />
             <h2 className="font-bold text-base sm:text-lg">Customer Details</h2>
@@ -184,60 +178,36 @@ const CheckoutForm: React.FC = () => {
             {errors.address && <p className="text-red-500 text-[10px] sm:text-xs mt-1">{errors.address}</p>}
           </div>
 
-          {/* DYNAMIC CITY AND STATE GRID */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 !mt-1 sm:!mt-2">
             
-            {/* STATE DROPDOWN */}
+            {/* STATE - MANUAL TEXT INPUT */}
             <div>
               <label className="block text-[11px] sm:text-xs font-semibold text-gray-600 mb-1 sm:mb-1.5 flex items-center gap-1">
                 <Map className="w-3 h-3" /> State *
               </label>
-              <select
+              <input
+                type="text"
                 value={form.state}
                 onChange={e => handleChange('state', e.target.value)}
-                /* FIXED: Set exact uniform heights (h-10 sm:h-12) and added precise py alignments */
-                className={`w-full h-9 sm:h-12 border rounded-lg px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white ${errors.state ? 'border-red-400' : 'border-gray-200'} ${!form.state ? 'text-gray-400' : 'text-gray-800'}`}
-              >
-                <option value="" disabled>Select state</option>
-                {Object.keys(statesCities).sort().map(s => (
-                  <option key={s} value={s} className="text-gray-800">{s}</option>
-                ))}
-              </select>
+                placeholder="Enter state name"
+                className={`w-full h-9 sm:h-12 border rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors.state ? 'border-red-400' : 'border-gray-200'}`}
+              />
               {errors.state && <p className="text-red-500 text-[10px] sm:text-xs mt-1">{errors.state}</p>}
             </div>
 
-            {/* CONDITIONAL CITY FIELD */}
+            {/* CITY - ALWAYS MANUAL TEXT INPUT */}
             <div>
               <label className="block text-[11px] sm:text-xs font-semibold text-gray-600 mb-1 sm:mb-1.5 flex items-center gap-1">
-                <Building className="w-3 h-3" /> City *
+                <Building className="w-3 h-3" /> City and District *
               </label>
-              
-              {showCityDropdown ? (
-                /* Shows Dropdown for states like Andhra Pradesh */
-                <select
-                  value={form.city}
-                  onChange={e => handleChange('city', e.target.value)}
-                  disabled={!form.state}
-                  /* FIXED: Replaced default settings with explicit custom text baseline height constraints to avoid dropdown shrinkage */
-                  className={`w-full h-9 sm:h-12 border rounded-lg px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white disabled:bg-gray-50 disabled:text-gray-400 ${errors.city ? 'border-red-400' : 'border-gray-200'} ${!form.city ? 'text-gray-400' : 'text-gray-800'}`}
-                >
-                  <option value="" disabled>Select city</option>
-                  {cities.map((c: string) => (
-                    <option key={c} value={c} className="text-gray-800">{c}</option>
-                  ))}
-                </select>
-              ) : (
-                /* Shows Manual Text Input for states like Tamil Nadu */
-                <input
-                  type="text"
-                  value={form.city}
-                  onChange={e => handleChange('city', e.target.value)}
-                  disabled={!form.state}
-                  placeholder={!form.state ? "Select state first" : "Enter city name"}
-                  /* FIXED: Matched exact desktop tracking measurements */
-                  className={`w-full h-9 sm:h-12 border rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:bg-gray-50 disabled:text-gray-400 ${errors.city ? 'border-red-400' : 'border-gray-200'}`}
-                />
-              )}
+              <input
+                type="text"
+                value={form.city}
+                onChange={e => handleChange('city', e.target.value)}
+                disabled={!form.state}
+                placeholder={!form.state ? "Select state first" : "Enter city name"}
+                className={`w-full h-9 sm:h-12 border rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:bg-gray-50 disabled:text-gray-400 ${errors.city ? 'border-red-400' : 'border-gray-200'}`}
+              />
               {errors.city && <p className="text-red-500 text-[10px] sm:text-xs mt-1">{errors.city}</p>}
             </div>
 
@@ -276,7 +246,7 @@ const CheckoutForm: React.FC = () => {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-bold py-2 sm:py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg text-xs sm:text-sm"
+            className="flex-1 bg-gradient-to-r from-orange-700 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white font-bold py-2 sm:py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg text-xs sm:text-sm"
           >
             <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Generate Estimate

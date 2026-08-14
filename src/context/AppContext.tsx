@@ -57,10 +57,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const fetchProducts = useCallback(async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 5000);
+
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .order('id');
+        .order('id')
+        .abortSignal(controller.signal);
+
+      clearTimeout(timeoutId);
 
       if (!error && data && data.length > 0) {
         const mapped = data.map(p => ({
@@ -169,4 +177,4 @@ export const useApp = () => {
   const ctx = useContext(AppContext);
   if (!ctx) throw new Error('useApp must be used within AppProvider');
   return ctx;
-}; 
+};

@@ -15,6 +15,13 @@ const bh = (extra?: React.CSSProperties): React.CSSProperties => ({
   ...bs(extra), fontWeight: 'bold', backgroundColor: '#fff', textAlign: 'center' as const,
 });
 
+// ─── Filename helper ───────────────────────────────────────────────────────────
+const buildFileName = (name: string, city: string) => {
+  const date = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+  const safe = (s: string) => s.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '');
+  return `${safe(name)}_${safe(city)}_${date}.pdf`;
+};
+
 // ─── Pure-jsPDF generator ─────────────────────────────────────────────────────
 async function generatePDF(
   data: {
@@ -155,7 +162,7 @@ async function generatePDF(
     tC('80%',                            y, tdH, col.discount.x     + col.discount.w     / 2);
     tC(String(item.product.price),       y, tdH, col.price.x        + col.price.w        / 2);
     tC(String(item.quantity),            y, tdH, col.qty.x          + col.qty.w          / 2);
-    tC(fmtINR(amount),                   y, tdH, col.amount.x       + col.amount.w / 2)
+    tC(fmtINR(amount),                   y, tdH, col.amount.x       + col.amount.w / 2);
     y += tdH;
   });
 
@@ -166,7 +173,7 @@ async function generatePDF(
 
   const srH = 7;
   const divX = L + W - 45;
-  // Sub Total row
+
   ensurePage(srH);
   drawRect(y, srH); vLine(divX, y, srH);
   doc.setFont('h', 'normal'); doc.setFontSize(9);
@@ -174,7 +181,6 @@ async function generatePDF(
   tR(fmtINR(data.overallTotal), y, srH, R - 3);
   y += srH;
 
-  // You Save (left, colon style) + Packing (right) on same row — no middle divider
   ensurePage(srH);
   drawRect(y, srH); vLine(divX, y, srH);
   doc.setFont('h', 'normal'); doc.setFontSize(9);
@@ -183,7 +189,6 @@ async function generatePDF(
   tR(packingCharges === 0 ? '0' : fmtINR(packingCharges), y, srH, R - 3);
   y += srH;
 
-  // Total row
   ensurePage(srH);
   drawRect(y, srH); vLine(divX, y, srH);
   doc.setFont('h', 'bold'); doc.setFontSize(9);
@@ -191,7 +196,6 @@ async function generatePDF(
   tR(fmtINR(finalAmount), y, srH, R - 3);
   y += srH;
 
-  // Bottom bar
   const btH = 7;
   ensurePage(btH);
   drawRect(y, btH);
@@ -223,7 +227,10 @@ const InvoicePage: React.FC = () => {
   const handleDownload = async () => {
     if (!customerDetails) return;
     setLoading('download');
-    try { await generatePDF(buildPDFData(), 'Estimate.pdf'); } catch (e) { console.error(e); }
+    try {
+      const fileName = buildFileName(customerDetails.name, customerDetails.city);
+      await generatePDF(buildPDFData(), fileName);
+    } catch (e) { console.error(e); }
     setLoading(null);
   };
 
@@ -231,7 +238,6 @@ const InvoicePage: React.FC = () => {
     if (!customerDetails) return;
     setLoading('place-order'); setSuccessMessage('');
     try {
-      // 1. Generate PDF as base64
       const { jsPDF } = await import('jspdf');
       const data = buildPDFData();
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -253,7 +259,6 @@ const InvoicePage: React.FC = () => {
       const tL = (t: string, rowY: number, h: number, x = L + 3) => doc.text(t, x, mid(rowY, h), { baseline: 'middle' });
       const tR = (t: string, rowY: number, h: number, x = R - 3) => doc.text(t, x, mid(rowY, h), { align: 'right', baseline: 'middle' });
 
-     // Header
       drawRect(y, 8); doc.setFontSize(13); doc.setFont('h', 'bold');
       tC('ESTIMATE', y, 8, pageW / 2);
       doc.setFontSize(9); doc.setFont('h', 'normal');
@@ -269,7 +274,6 @@ const InvoicePage: React.FC = () => {
       drawRect(y, 7); doc.setFontSize(9); doc.setFont('h', 'normal');
       tC(data.shopConfig.address, y, 7, pageW / 2); y += 7;
 
-      // Customer
       const cd = data.customerDetails;
       drawRect(y, 6); doc.setFont('h', 'bold'); doc.setFontSize(9);
       tL('Customer Details', y, 6); y += 6;
@@ -277,7 +281,6 @@ const InvoicePage: React.FC = () => {
         .filter(Boolean).forEach(line => { drawRect(y, 6); doc.setFont('h', 'normal'); doc.setFontSize(9); tL(line, y, 6); y += 6; });
       y += 2;
 
-      // Product table
       const col = {
         sno:         { x: L,       w: 8  },
         name:        { x: L + 8,   w: 55 },
@@ -323,7 +326,6 @@ const InvoicePage: React.FC = () => {
         y += tdH;
       });
 
-      // Summary
       const packingCharges2 = data.packingChargesPercent > 0 ? Math.round(data.overallTotal * data.packingChargesPercent / 100) : 0;
       const finalAmount2 = data.overallTotal + packingCharges2;
       const srH = 7;
@@ -350,10 +352,8 @@ const InvoicePage: React.FC = () => {
       tR('Overall Total', y, btH, divX - 3);
       tR(fmtINR(finalAmount2), y, btH, R - 3);
 
-      // 2. Convert to base64
       const pdfBase64 = doc.output('datauristring').split(',')[1];
 
-      // 3. Send to API with base64 PDF
       const res = await fetch('/api/send-order-whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -378,17 +378,23 @@ const InvoicePage: React.FC = () => {
       });
 
       const result = await res.json();
+      const fileName = buildFileName(customerDetails.name, customerDetails.city);
+
       if (res.ok && result.success) {
         setSuccessMessage('Order placed! Estimate sent to WhatsApp ✅');
         setOrderPlaced(true);
-        await generatePDF(buildPDFData(), 'Estimate.pdf');
+        await generatePDF(buildPDFData(), fileName);
       } else {
         console.error('Order error:', result);
-        setSuccessMessage('WhatsApp send failed. PDF downloaded locally instead.');
-        // Still download PDF locally so order is not lost
-        await generatePDF(buildPDFData(), 'Estimate.pdf');
+        setSuccessMessage('WhatsApp send failed. PDF downloaded to your mobile/laptop instead. Please send it to our WhatsApp');
+        await generatePDF(buildPDFData(), fileName);
       }
-    } catch (e) { console.error(e); setSuccessMessage('Error placing order. Please try again.'); }
+    } catch (e) { 
+      console.error(e);
+      const fileName = buildFileName(customerDetails.name, customerDetails.city);
+      await generatePDF(buildPDFData(), fileName);
+      setSuccessMessage('Error placing order. Please try again or Download PDF and send it to our WhatsApp'); 
+    }
     setLoading(null);
   };
 
@@ -408,7 +414,6 @@ const InvoicePage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 pt-20 pb-10 px-3">
       <div className="w-full max-w-4xl mx-auto">
 
-        {/* Action bar — all 3 buttons in one row at all screen sizes */}
         <div className="flex items-center gap-2 mb-4 w-full">
           <button
             onClick={() => setCurrentPage('home')}
@@ -444,10 +449,6 @@ const InvoicePage: React.FC = () => {
           </div>
         )}
 
-        {/* ══ INVOICE BROWSER VIEW ══
-            • No horizontal scroll — table scales to fit any screen width
-            • Uses % widths + responsive font size via inline style
-        ════════════════════════════ */}
         <div
           id="invoice-content"
           style={{ background: '#fff', border: '2px solid #333', fontFamily: 'Arial, sans-serif', width: '100%' }}
@@ -455,10 +456,8 @@ const InvoicePage: React.FC = () => {
           {/* Header */}
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <tbody>
-              {/* Row 1 — ESTIMATE centred absolutely, date right */}
               <tr>
                 <td style={{ border: BORDER, padding: '6px 8px', position: 'relative', height: 36 }} colSpan={3}>
-                  {/* ESTIMATE perfectly centred regardless of date width */}
                   <span style={{
                     position: 'absolute', left: '50%', top: '50%',
                     transform: 'translate(-50%, -50%)',
@@ -467,7 +466,6 @@ const InvoicePage: React.FC = () => {
                   }}>
                     ESTIMATE
                   </span>
-                  {/* Date anchored to right */}
                   <span style={{
                     position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                     fontSize: 'clamp(9px, 2vw, 13px)', whiteSpace: 'nowrap',
@@ -528,13 +526,13 @@ const InvoicePage: React.FC = () => {
             <thead>
               <tr>
                 {[
-                  { label: 'S.No',          align: 'center' },
-                  { label: 'Product Name',  align: 'center'   },
-                  { label: 'Actual Price',  align: 'center' },
-                  { label: 'Discount',      align: 'center' },
-                  { label: 'Price',         align: 'center' },
-                  { label: 'QTY',           align: 'center' },
-                  { label: 'Amount',        align: 'center'  },
+                  { label: 'S.No',         align: 'center' },
+                  { label: 'Product Name', align: 'center' },
+                  { label: 'Actual Price', align: 'center' },
+                  { label: 'Discount',     align: 'center' },
+                  { label: 'Price',        align: 'center' },
+                  { label: 'QTY',          align: 'center' },
+                  { label: 'Amount',       align: 'center' },
                 ].map(({ label, align }) => (
                   <th key={label} style={{
                     border: BORDER, padding: '4px 3px',
@@ -555,7 +553,7 @@ const InvoicePage: React.FC = () => {
                   <td style={bs({ textAlign: 'center', fontSize: 'clamp(9px, 2vw, 12px)', padding: '4px 3px' })}>{i + 1}</td>
                   <td style={bs({ textAlign: 'center', fontSize: 'clamp(9px, 2vw, 12px)', padding: '4px 5px', wordBreak: 'break-word' })}>
                     <div>{item.product.name}</div>
-                      {item.product.content && <div style={{ fontSize: 'clamp(8px, 1.6vw, 10px)', color: '#666' }}>{item.product.content}</div>}
+                    {item.product.content && <div style={{ fontSize: 'clamp(8px, 1.6vw, 10px)', color: '#666' }}>{item.product.content}</div>}
                   </td>
                   <td style={bs({ textAlign: 'center', fontSize: 'clamp(9px, 2vw, 12px)', padding: '4px 3px' })}>{item.product.actualPrice}</td>
                   <td style={bs({ textAlign: 'center', fontSize: 'clamp(9px, 2vw, 12px)', padding: '4px 3px' })}>80%</td>
@@ -579,7 +577,7 @@ const InvoicePage: React.FC = () => {
             </tbody>
           </table>
 
-          {/* You Save + Packing on same row — no divider, colon style */}
+          {/* You Save + Packing */}
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <tbody>
               <tr>

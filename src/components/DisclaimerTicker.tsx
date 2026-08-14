@@ -31,7 +31,7 @@ const DisclaimerTicker: React.FC = () => {
         <div className="animate-ticker text-black text-[11px] sm:text-sm font-medium px-4 tracking-wide cursor-default">
           As per 2018 supreme court order, online sale of firecrackers are not permitted! We value our customers and at the same time, respect jurisdiction. We request you to add your products to the cart and submit the required crackers through the enquiry button. We will contact you within 24 hrs and confirm the order through WhatsApp or phone call.{' '}
           <span className="text-red-700 font-bold ml-1">
-            Please add and submit your enquiries and enjoy your Diwali with Sivakasi Robo fire works.
+            Please add and submit your enquiries and enjoy your Diwali with Sivakasi Wisdom Crackers.
           </span>
         </div>
       </div>

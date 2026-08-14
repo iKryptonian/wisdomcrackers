@@ -18,8 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .join('\n');
 
   const caption = `🛒 *New Order Received!*
-
-👤 *Customer:* ${customerName}
+  👤 *Customer:* ${customerName}
 📞 *Mobile:* ${customerMobile}
 📧 *Email:* ${customerEmail ?? 'N/A'}
 📍 *Address:* ${customerAddress}, ${customerCity}, ${customerState} - ${customerPincode ?? ''}

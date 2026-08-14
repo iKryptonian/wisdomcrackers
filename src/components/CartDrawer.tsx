@@ -68,7 +68,7 @@ const CartDrawer: React.FC = () => {
                 </h3>
                 <button
                   onClick={() => setPreviewProduct(null)}
-                  className="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors flex-shrink-0"
+                  className="p-1 text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-lg transition-colors flex-shrink-0"
                 >
                   <X className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" />
                 </button>
@@ -89,7 +89,7 @@ const CartDrawer: React.FC = () => {
                   </p>
                   <div className="flex justify-between items-center pt-3 mt-1 border-t border-gray-100">
                     <span className="text-gray-500 text-xs sm:text-sm font-medium">Price per unit:</span>
-                    <span className="font-bold text-red-700 text-base sm:text-lg">
+                    <span className="font-bold text-orange-700 text-base sm:text-lg">
                       {fmt(previewProduct.price)}
                     </span>
                   </div>
@@ -101,21 +101,21 @@ const CartDrawer: React.FC = () => {
         )}
 
         {/* Header */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-red-800 to-red-700 text-white flex-shrink-0 shadow-sm z-10">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-orange-600 to-orange-600 text-white flex-shrink-0 shadow-sm z-10">
           <div className="flex items-center gap-3">
-            <ShoppingBag className="w-5 h-5 text-yellow-300" />
+            <ShoppingBag className="w-5 h-5 sm:w-7 sm:h-7 text-yellow-300" />
             <div>
-              <h2 className="font-bold text-sm sm:text-base leading-none">Your Cart</h2>
-              <p className="text-yellow-200/70 font-bold text-[10px] sm:text-[10px] mt-0.5">
+              <h2 className="font-bold text-[16px] sm:text-[18px] leading-none">Your Cart</h2>
+              <p className="text-yellow-200/70 font-bold text-[12px] sm:text-[14px] mt-0.5">
                 {cartItems.length} product{cartItems.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="p-1 hover:bg-red-700 rounded-full transition-colors"
+            className="p-1 sm:py-3 hover:bg-orange-700 rounded-full transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-6 h-6 sm:w-8 sm:h-8 " />
           </button>
         </div>
 
@@ -128,11 +128,11 @@ const CartDrawer: React.FC = () => {
             </div>
             
             <div>
-              <p className="text-gray-700 font-bold text-base sm:text-2xl transition-all">
+              <p className="text-gray-700 font-extrabold sm:font-bold text-lg sm:text-4xl transition-all">
                 Your cart is empty
               </p>
-              <p className="text-gray-400 text-xs sm:text-base mt-1 sm:mt-2 transition-all">
-                Add products from the list below
+              <p className="text-gray-600 text-xs sm:text-lg font-bold mt-1 sm:mt-2 transition-all">
+                Add products to proceed
               </p>
             </div>
 
@@ -146,7 +146,7 @@ const CartDrawer: React.FC = () => {
                   }
                 }, 300);
               }}
-              className="mt-2 sm:mt-4 bg-red-700 hover:bg-red-600 text-white font-semibold px-5 py-2 sm:px-8 sm:py-3 rounded-full transition-colors text-xs sm:text-base shadow-sm hover:shadow-md"
+              className="mt-2 sm:mt-4 bg-orange-600 hover:bg-orange-600 text-white font-bold px-5 py-2 sm:px-8 sm:py-3 rounded-full transition-colors text-sm sm:text-xl shadow-sm hover:shadow-md"
             >
               Browse Products
             </button>
@@ -155,7 +155,7 @@ const CartDrawer: React.FC = () => {
         ) : (
           <>
             {/* Cart Items List */}
-            <div className="flex-1 overflow-y-auto px-3 sm:px-3 pt-2 pb-2 space-y-1 sm:space-y-2">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-3 sm:px-3 pt-2 pb-2 space-y-1 sm:space-y-2">
               {cartItems.map(({ product, quantity }) => {
                 const rowTotal = product.price * quantity;
                 return (
@@ -186,7 +186,7 @@ const CartDrawer: React.FC = () => {
                         <div className="flex items-center gap-1 sm:gap-1.5">
                           <button
                             onClick={() => setQuantity(product.id, Math.max(0, quantity - 1))}
-                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-100 hover:bg-red-200 text-red-700 flex items-center justify-center transition-colors"
+                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-orange-100 hover:bg-orange-200 text-orange-700 flex items-center justify-center transition-colors"
                           >
                             <Minus className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                           </button>
@@ -199,7 +199,7 @@ const CartDrawer: React.FC = () => {
                           </button>
                         </div>
                         <div className="text-right">
-                          <p className="text-red-700 font-bold text-[11px] sm:text-sm">{fmt(rowTotal)}</p>
+                          <p className="text-orange-700 font-bold text-[11px] sm:text-sm">{fmt(rowTotal)}</p>
                           <p className="text-gray-400 text-[8px] sm:text-[10px]">{fmt(product.price)}/unit</p>
                         </div>
                       </div>
@@ -208,7 +208,7 @@ const CartDrawer: React.FC = () => {
                     {/* 3. DUSTBIN BUTTON */}
                     <button
                       onClick={() => setQuantity(product.id, 0)}
-                      className="mr-2 sm:mr-0 flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors"
+                      className="mr-2 sm:mr-0 flex-shrink-0 text-gray-400 hover:text-orange-500 transition-colors"
                     >
                       <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
@@ -220,27 +220,27 @@ const CartDrawer: React.FC = () => {
             {/* Footer Totals */}
             <div className="flex-shrink-0 border-t border-gray-200 px-3 py-2.5 sm:px-4 sm:py-3 bg-gray-50">
               <div className="space-y-1 sm:space-y-1.5 mb-2 sm:mb-3">
-                <div className="flex justify-between text-[10px] sm:text-xs">
-                  <span className="text-gray-500">Net Total (MRP)</span>
+                <div className="flex justify-between text-[10px] font-bold sm:text-[12px]">
+                  <span className="text-gray-700">Net Total (MRP)</span>
                   <span className="text-gray-500 line-through">{fmt(netTotal)}</span>
                 </div>
-                <div className="flex justify-between text-[10px] sm:text-xs items-center">
-                  <span className="flex items-center gap-1 text-green-600">
+                <div className="flex justify-between text-[10px] sm:text-[12px] items-center">
+                  <span className="flex items-center gap-1 font-bold text-green-600">
                     <TrendingDown className="w-3 h-3" />
                     Discount
                   </span>
-                  <span className="text-green-600 font-semibold">- {fmt(totalSavings)}</span>
+                  <span className="text-green-600 font-bold">- {fmt(totalSavings)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-1.5 flex justify-between items-center">
-                  <span className="font-bold text-gray-800 text-xs sm:text-sm">Estimated Total</span>
-                  <span className="text-base sm:text-lg font-extrabold text-red-700">{fmt(overallTotal)}</span>
+                  <span className="font-bold text-gray-800 text-xs sm:text-[14px]">Estimated Total</span>
+                  <span className="text-base sm:text-[18px] font-extrabold text-orange-700">{fmt(overallTotal)}</span>
                 </div>
               </div>
 
               {/* The Blue Info Box */}
               <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 sm:p-2.5 mb-2 sm:mb-3 flex items-start gap-1.5 sm:gap-2">
-                <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <div className="text-[10px] sm:text-[11px] text-blue-800 leading-relaxed font-medium space-y-0.5">
+                <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-800 shrink-0 mt-0.5" />
+                <div className="text-[10px] sm:text-[13px] text-blue-800 leading-relaxed font-bold space-y-0.5">
                   <p>• 0 Packing Charges applied.</p>
                   <p>• Courier charges are <span className="font-bold underline">not included</span> in this estimation and must be paid separately.</p>
                 </div>
@@ -248,8 +248,8 @@ const CartDrawer: React.FC = () => {
 
               {/* Minimum Order Warning Alert */}
               {isBelowMinimum && (
-                <div className="mb-3 text-center bg-red-50 text-red-600 rounded-lg py-2 px-3 text-[10px] sm:text-xs font-medium border border-red-100">
-                  Minimum order value is <span className="font-bold">{fmt(MINIMUM_ORDER_VALUE)}</span>.<br className="sm:hidden" /> Please add <span className="font-bold underline">{fmt(shortfall)}</span> more to proceed.
+                <div className="mb-3 text-center bg-orange-50 text-orange-600 rounded-lg py-2 px-3 text-[11px] sm:text-[14px] font-bold border border-orange-100">
+                  Minimum order value is <span className="font-extrabold text-red-700">{fmt(MINIMUM_ORDER_VALUE)}</span>.<br className="sm:hidden" /> Please add <span className="font-extrabold text-red-700 underline">{fmt(shortfall)}</span> more to proceed.
                 </div>
               )}
 
@@ -268,8 +268,8 @@ const CartDrawer: React.FC = () => {
                         }
                       }, 300);
                     }}
-                    /* CHANGED: Removed the border and made it a solid red button! */
-                    className="w-full bg-red-600 hover:bg-red-700 text-white shadow-md font-bold py-2 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 text-[10px] sm:text-xs tracking-wide"
+                    /* CHANGED: Removed the border and made it a solid orange button! */
+                    className="w-full bg-orange-500 hover:bg-orange-700 text-white shadow-md font-bold py-2 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 text-[10px] sm:text-xs tracking-wide"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     ADD MORE PRODUCTS
@@ -283,7 +283,7 @@ const CartDrawer: React.FC = () => {
                   className={`w-full text-white font-bold py-2 sm:py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs tracking-wide ${
                     isBelowMinimum 
                       ? 'bg-gray-400 cursor-not-allowed shadow-none' 
-                      : 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 shadow-md shadow-red-700/30 hover:shadow-red-600/40 hover:scale-[1.01]'
+                      : 'bg-gradient-to-r from-orange-700 to-orange-600 hover:from-orange-600 hover:to-orange-500 shadow-md shadow-orange-700/30 hover:shadow-orange-600/40 hover:scale-[1.01]'
                   }`}
                 >
                   CONFIRM ESTIMATE

@@ -28,6 +28,9 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, index }) => {
   <>
     {showImageModal && createPortal(
       <ImagePreviewModal
+        productId={product.id}
+        price={product.price}
+        actualPrice={product.actualPrice}
         image={product.image}
         images={product.images}
         productName={product.name}

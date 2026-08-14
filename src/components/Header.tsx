@@ -4,15 +4,15 @@ import { useApp } from '../context/AppContext';
 import { shopConfig } from '../config/shopConfig';
 
 const navLinks = [
-  { label: 'Home', href: '#home' },
-  { label: 'About Us', href: '#about' },
-  { label: 'Quick Purchase', href: '#products' },
-  { label: 'Safety Tips', href: '#safety' },
-  { label: 'Contact Us', href: '#contact' },
-];
+  { label: 'Home', target: 'home' },
+  { label: 'About Us',  target: 'about' },
+  { label: 'Quick Purchase',  target: 'products' },
+  { label: 'Safety Tips',  target: 'safety' },
+  { label: 'Contact Us', target: 'contact' },
+] as const;
 
 const Header: React.FC = () => {
-  const { cartItems, setIsCartOpen } = useApp();
+  const { cartItems, setIsCartOpen, currentPage, setCurrentPage } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -23,13 +23,41 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  {/*
+  const handleNavClick = (link: (typeof navLinks)[number]) => {
+    if (link.type === 'page') {
+      // Switch to a standalone page (About / Safety)
+      setCurrentPage(link.target);
+      window.scrollTo({ top: 0 });
+    } else {
+      // Scroll-based section (Home / Products / Contact)
+      if (currentPage !== 'home') {
+        setCurrentPage('home');
+        setTimeout(() => {
+          document.getElementById(link.target)?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else {
+        if (link.target === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          document.getElementById(link.target)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  };
+  */}
+  const handleNavClick = (link: (typeof navLinks)[number]) => {
+    setCurrentPage(link.target);
+    window.scrollTo({ top: 0 });
+  };
 
   return (
     <header
-      /* THE FIX: z-[100] prevents overlap. Solid bg-red-950 prevents the invisible flash. Fixed py-2 sm:py-3 prevents size jumping! */
-      className={`fixed top-0 left-0 right-0 z-[100] bg-red-900 py-0.5 sm:py-1 transition-shadow duration-300 `}
+      className={`fixed top-0 left-0 right-0 z-[100] py-0.5 sm:py-1 bg-gray-200 transition-all duration-300 ${
+        scrolled ? 'shadow-lg' : 'shadow-md'
+      }`}
     >
-      {/* THE DANCE ANIMATION CSS */}
+      {/* DANCE ANIMATION */}
       <style>
         {`
           @keyframes dance {
@@ -48,58 +76,68 @@ const Header: React.FC = () => {
 
       <div className="max-w-[1650px] mx-auto px-4 sm:px-8">
         <div className="flex items-center justify-between">
-          
-          {/* LOGO AND SHOP NAME SECTION */}
+
+          {/* LOGO */}
           <div className="flex items-center gap-1 sm:gap-3 min-w-0">
-            {/* Custom Image Logo - Size stays perfectly locked! */}
-            <img 
-              src="/skt_logo.png" 
-              alt={shopConfig.name} 
-              className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain drop-shadow-lg transition-transform hover:scale-105"
+            <img
+              src="/wc_logo.png"
+              alt={shopConfig.name}
+              className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain drop-shadow-lg transition-transform hover:scale-105"
             />
+
             <div className="min-w-0">
-              <h1 className="text-white font-bold leading-tight tracking-wide whitespace-nowrap text-base sm:text-xl md:text-2xl lg:text-3xl drop-shadow-md">
+              <h1 className="text-orange-700 font-bold leading-tight tracking-wide whitespace-nowrap text-base sm:text-xl md:text-2xl lg:text-3xl">
                 {shopConfig.name}
               </h1>
-              <p className="text-yellow-300 text-xs hidden sm:block opacity-90">
-                {shopConfig.tagline}
-              </p>
             </div>
           </div>
 
           {/* DESKTOP NAVIGATION */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map(link => (
-              <a
+              <button
                 key={link.label}
-                href={link.href}
-                onClick={e => { e.preventDefault(); document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' }); }}
-                className="text-yellow-100 hover:text-yellow-300 px-3 py-2 text-xl font-medium rounded-md hover:bg-red-700 transition-all duration-200"
+                onClick={() => handleNavClick(link)}
+                className="text-black hover:text-orange-700 px-3 py-2 text-[18px] font-medium rounded-md hover:bg-orange-100 transition-all duration-200"
               >
-                {/* Applies the dance animation ONLY to Quick Purchase */}
-                <span className={link.label === 'Quick Purchase' ? 'animate-dance text-yellow-400 font-bold' : ''}>
+                <span
+                  className={
+                    link.label === 'Quick Purchase'
+                      ? 'animate-dance text-orange-700 font-bold'
+                      : ''
+                  }
+                >
                   {link.label}
                 </span>
-              </a>
+              </button>
             ))}
           </nav>
 
-          {/* CONTACT & CART BUTTONS */}
+          {/* CONTACT + CART */}
           <div className="flex items-center gap-4 sm:gap-14">
+
             <a
               href={`tel:${shopConfig.mobile}`}
-              className="hidden md:flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-300 text-red-900 text-sm font-bold px-4 py-3 rounded-full transition-colors"
+              className="hidden md:flex items-center gap-1.5 bg-orange-600 hover:bg-orange-600 text-white text-sm font-bold px-4 py-3 rounded-full transition-colors"
+            >
+            
+              <Phone className="w-5 h-5" />
+              <span className="text-[16px]">{shopConfig.mobile}</span>
+            </a>
+            <a
+              href={`tel:${shopConfig.mobile2.replace(/\s/g, "")}`}
+              className="hidden md:flex items-center gap-1.5 bg-orange-600 hover:bg-orange-600 text-white text-sm font-bold px-4 py-3 rounded-full transition-colors"
             >
               <Phone className="w-5 h-5" />
-              <span className="text-[16px] ">{shopConfig.mobile}</span>
+              <span className="text-[16px]">{shopConfig.mobile2}</span>
             </a>
 
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-yellow-500 hover:bg-yellow-400 text-red-900 p-2 sm:p-3 rounded-full transition-all duration-200 shadow-lg hover:shadow-yellow-500/30 hover:scale-105"
+              className="relative bg-orange-600 hover:bg-orange-500 text-white p-2 sm:p-3 rounded-full transition-all duration-200 shadow-lg hover:shadow-orange-500/30 hover:scale-105"
             >
               <ShoppingCart className="w-5 h-5 sm:w-7 sm:h-7" />
-              
+
               {totalQty > 0 && (
                 <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] sm:text-xs font-bold h-4 min-w-4 sm:h-5 sm:min-w-5 px-1 sm:px-1.5 rounded-full flex items-center justify-center border-2 border-white whitespace-nowrap">
                   {totalQty > 99 ? '99+' : totalQty}
@@ -108,40 +146,57 @@ const Header: React.FC = () => {
             </button>
 
             <button
-              className="lg:hidden text-white p-1"
+              className="lg:hidden text-gray-900 p-1"
               onClick={() => setMenuOpen(!menuOpen)}
             >
-              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-8 h-8" />}
+              {menuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-8 h-8" />
+              )}
             </button>
+
           </div>
         </div>
 
-        {/* MOBILE NAVIGATION MENU */}
+        {/* MOBILE MENU */}
         {menuOpen && (
-          <div className="lg:hidden mt-3 pb-3 border-t border-red-700">
+          <div className="lg:hidden mt-3 pb-3 border-t border-gray-200 bg-gray-200">
             {navLinks.map(link => (
-              <a
+              <button
                 key={link.label}
-                href={link.href}
-                onClick={e => {
-                  e.preventDefault();
-                  document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' });
+                onClick={() => {
+                  handleNavClick(link);
                   setMenuOpen(false);
                 }}
-                className="block text-yellow-100 hover:text-yellow-300 px-4 py-2.5 text-sm font-medium hover:bg-red-700 rounded-md transition-colors mt-1"
+                className="block w-full text-left text-gray-900 hover:text-orange-700 px-4 py-2.5 text-sm font-bold hover:bg-orange-100 rounded-md transition-colors mt-1"
               >
-                {/* Applies the dance animation ONLY to Quick Purchase in the mobile menu */}
-                <span className={link.label === 'Quick Purchase' ? 'animate-dance text-yellow-400 font-bold' : ''}>
+                <span
+                  className={
+                    link.label === 'Quick Purchase'
+                      ? 'animate-dance text-orange-700 font-bold'
+                      : ''
+                  }
+                >
                   {link.label}
                 </span>
-              </a>
+              </button>
             ))}
+
             <a
               href={`tel:${shopConfig.mobile}`}
-              className="flex items-center gap-2 text-yellow-300 px-4 py-2.5 text-sm font-medium mt-1"
+              className="flex items-center gap-2 text-orange-700 px-4 py-2.5 text-sm font-bold mt-1 bg-orange-100 rounded-md hover:bg-orange-300 transition-colors"
             >
               <Phone className="w-4 h-4" />
               {shopConfig.mobile}
+            </a>
+
+            <a
+              href={`tel:${shopConfig.mobile2}`}
+              className="flex items-center gap-2 text-orange-700 px-4 py-2.5 text-sm font-bold mt-1 bg-orange-100 rounded-md hover:bg-orange-300 transition-colors"
+            >
+              <Phone className="w-4 h-4" />
+              {shopConfig.mobile2}
             </a>
           </div>
         )}

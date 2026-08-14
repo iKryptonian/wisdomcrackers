@@ -20,12 +20,12 @@ const StickyTotalBar: React.FC = () => {
       {/* 1. DESKTOP VIEW (Pure CSS Sticky - Zero Glitches) */}
       {/* ========================================= */}
       <div 
-        className="hidden sm:block sticky top-[80px] lg:top-[70px] z-40 bg-gray-900 border-y border-yellow-500/30 shadow-2xl"
+        className="hidden sm:block sticky top-[80px] lg:top-[70px] z-40 bg-gray-900 border-y border-yellow-500/30"
       >
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-0 py-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <ShoppingBag className="w-4 h-4 text-yellow-400" />
+              <ShoppingBag className="w-5 h-5 text-yellow-400" />
               <span className="text-gray-400 font-bold text-sm">
                 {totalItems} item{totalItems !== 1 ? 's' : ''} selected
               </span>
@@ -33,13 +33,13 @@ const StickyTotalBar: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-48">
               <div className="flex items-center gap-3">
-                <Tag className="w-3.5 h-3.5 text-gray-400" />
+                <Tag className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-400 text-sm font-bold">Net Total:</span>
                 <span className="text-gray-300 text-sm font-medium line-through">{fmt(netTotal)}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <TrendingDown className="w-3.5 h-3.5 text-green-400 " />
+                <TrendingDown className="w-4 h-4 text-green-400 " />
                 <span className="text-gray-400 text-sm font-bold">You Save:</span>
                 <span className="text-green-400 text-sm font-bold">{fmt(totalSavings)}</span>
               </div>
@@ -53,9 +53,9 @@ const StickyTotalBar: React.FC = () => {
             {totalItems > 0 && (
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="bg-yellow-500 hover:bg-yellow-400 text-red-900 text-sm font-bold px-4 py-1.5 rounded-full transition-colors flex items-center gap-1.5"
+                className="bg-yellow-500 hover:bg-yellow-400 text-red-900 text-sm font-bold px-5 py-2.5 rounded-full transition-colors flex items-center gap-1.5"
               >
-                <ShoppingBag className="w-3.5 h-3.5" />
+                <ShoppingBag className="w-4 h-4" />
                 View Cart
               </button>
             )}
@@ -71,20 +71,20 @@ const StickyTotalBar: React.FC = () => {
           <div className="flex flex-col justify-between gap-1">
             
             {/* Top Row */}
-            <div className="flex items-center justify-between w-full gap-2">
+            <div className="flex items-center justify-between w-full gap-1">
               <div className="flex items-center gap-1.5">
-                <ShoppingBag className="w-3.5 h-3.5 text-yellow-400" />
+                <ShoppingBag className="w-3 h-3 text-yellow-400" />
                 <span className="text-gray-400 text-xs">{totalItems} items</span>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  <span className="text-gray-400 text-[10px] font-bold">Net Total:</span>
+                  <span className="text-gray-400 text-[9px] font-bold">Net Total:</span>
                   <span className="text-gray-400 text-[10px] font-medium line-through">{fmt(netTotal)}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <TrendingDown className="w-3 h-3 text-green-400" />
-                  <span className="text-gray-400 text-[10px] font-bold">You Save:</span>
+                  <span className="text-gray-400 text-[9px] font-bold">You Save:</span>
                   <span className="text-green-400 text-[10px] font-semibold">{fmt(totalSavings)}</span>
                 </div>
               </div>

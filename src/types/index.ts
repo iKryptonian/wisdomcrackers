@@ -25,4 +25,4 @@ export interface CustomerDetails {
   pincode: string; 
 }
 
-export type PageView = 'home' | 'invoice' | 'admin';
+export type PageView = 'home' | 'invoice' | 'admin' | 'about' | 'safety' | 'products' | 'contact';

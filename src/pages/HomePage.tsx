@@ -5,13 +5,12 @@ import StickyTotalBar from '../components/StickyTotalBar';
 import ProductTable from '../components/ProductTable';
 import CartDrawer from '../components/CartDrawer';
 import CheckoutForm from '../components/CheckoutForm';
-import AboutSection from '../components/AboutSection';
-import SafetySection from '../components/SafetySection';
+
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 
 const HomePage: React.FC = () => {
-  
+  {/*
   useEffect(() => {
     const timer = setTimeout(() => {
       const productSection = document.getElementById('products');
@@ -38,15 +37,14 @@ const HomePage: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
+  */}
   return (
     <div className="min-h-screen">
       <Header />
       <HeroBanner />
       <StickyTotalBar />
       <ProductTable />
-      <AboutSection />
-      <SafetySection />
+    
       <ContactSection />
       <Footer />
       <CartDrawer />
