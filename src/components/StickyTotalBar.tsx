@@ -20,7 +20,7 @@ const StickyTotalBar: React.FC = () => {
       {/* 1. DESKTOP VIEW (Pure CSS Sticky - Zero Glitches) */}
       {/* ========================================= */}
       <div 
-        className="hidden sm:block sticky top-[80px] lg:top-[70px] z-40 bg-gray-900 border-y border-yellow-500/30"
+        className="hidden sm:block sticky top-[80px] lg:top-[60px] z-40 bg-gray-900 border-y border-yellow-500/30"
       >
         <div className="max-w-7xl mx-auto px-0 py-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
