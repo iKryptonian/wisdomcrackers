@@ -56,6 +56,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [orderDate]                     = useState(formatDate);
 
   const fetchProducts = useCallback(async () => {
+    setProductsLoading(true);
+
+    // If Supabase isn't configured (missing env vars), skip straight to hardcoded data.
+    if (!supabase) {
+      setProducts(hardcodedProducts);
+      setDbOnline(false);
+      setProductsLoading(false);
+      return;
+    }
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
@@ -99,7 +109,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   useEffect(() => {
-    if (currentPage === 'home') {
+    if (currentPage === 'home' && supabase) {
       fetchProducts();
     }
   }, [currentPage]);
