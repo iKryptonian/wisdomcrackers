@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { CartItem, CustomerDetails, PageView, Product } from '../types';
 import { products as hardcodedProducts } from '../data/products';
 import { supabase } from '../lib/supabase';
@@ -44,21 +44,81 @@ const formatDate = () => {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts]         = useState<Product[]>([]);
+  const [products, setProducts]               = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [dbOnline, setDbOnline]         = useState(false);
-  const [quantities, setQuantities]     = useState<Record<number, number>>({});
-  const [isCartOpen, setIsCartOpen]     = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [dbOnline, setDbOnline]               = useState(false);
+  const [quantities, setQuantities]           = useState<Record<number, number>>({});
+  const [isCartOpen, setIsCartOpenState]      = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpenState] = useState(false);
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails | null>(null);
-  const [currentPage, setCurrentPage]   = useState<PageView>('home');
-  const [enquiryNumber]                 = useState(generateEnquiryNumber);
-  const [orderDate]                     = useState(formatDate);
+  const [currentPage, setCurrentPageState]    = useState<PageView>('home');
+  const [enquiryNumber]                       = useState(generateEnquiryNumber);
+  const [orderDate]                           = useState(formatDate);
+
+  const isCartOpenRef     = useRef(isCartOpen);
+  const isCheckoutOpenRef = useRef(isCheckoutOpen);
+  useEffect(() => { isCartOpenRef.current = isCartOpen; }, [isCartOpen]);
+  useEffect(() => { isCheckoutOpenRef.current = isCheckoutOpen; }, [isCheckoutOpen]);
+
+  // Seed initial history entry
+  useEffect(() => {
+    window.history.replaceState({ page: 'home' }, '');
+  }, []);
+
+  // Navigate pages with history
+  const setCurrentPage = useCallback((page: PageView) => {
+    setCurrentPageState(page);
+    window.history.pushState({ page }, '');
+  }, []);
+
+  // Cart with history
+  const setIsCartOpen = useCallback((open: boolean) => {
+    if (open) {
+      window.history.pushState({ modal: 'cart' }, '');
+      setIsCartOpenState(true);
+    } else {
+      setIsCartOpenState(false);
+      if (window.history.state?.modal === 'cart') {
+        window.history.back();
+      }
+    }
+  }, []);
+
+  // Checkout with history
+  const setIsCheckoutOpen = useCallback((open: boolean) => {
+    if (open) {
+      window.history.pushState({ modal: 'checkout' }, '');
+      setIsCheckoutOpenState(true);
+    } else {
+      setIsCheckoutOpenState(false);
+      if (window.history.state?.modal === 'checkout') {
+        window.history.back();
+      }
+    }
+  }, []);
+
+  // Single popstate listener
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state;
+      if (isCheckoutOpenRef.current) {
+        setIsCheckoutOpenState(false);
+        return;
+      }
+      if (isCartOpenRef.current) {
+        setIsCartOpenState(false);
+        return;
+      }
+      const page = state?.page as PageView | undefined;
+      setCurrentPageState(page || 'home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const fetchProducts = useCallback(async () => {
     setProductsLoading(true);
 
-    // If Supabase isn't configured (missing env vars), skip straight to hardcoded data.
     if (!supabase) {
       setProducts(hardcodedProducts);
       setDbOnline(false);
@@ -150,8 +210,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const resetCart = useCallback(() => {
     setQuantities({});
-    setIsCartOpen(false);
-    setIsCheckoutOpen(false);
+    setIsCartOpenState(false);
+    setIsCheckoutOpenState(false);
   }, []);
 
   return (

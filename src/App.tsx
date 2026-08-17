@@ -15,14 +15,15 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (window.location.hash === '#admin') {
       setCurrentPage('admin');
+      window.location.hash = '';
     }
   }, []);
 
-  if (currentPage === 'invoice') return <InvoicePage />;
-  if (currentPage === 'admin')   return <AdminPage />;
-  if (currentPage === 'about')   return <AboutPage />;
-  if (currentPage === 'safety')  return <SafetyPage />;
-   if (currentPage === 'products') return <ProductsPage />;
+  if (currentPage === 'invoice')  return <InvoicePage />;
+  if (currentPage === 'admin')    return <AdminPage />;
+  if (currentPage === 'about')    return <AboutPage />;
+  if (currentPage === 'safety')   return <SafetyPage />;
+  if (currentPage === 'products') return <ProductsPage />;
   if (currentPage === 'contact')  return <ContactPage />;
   return <HomePage />;
 };
