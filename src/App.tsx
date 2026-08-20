@@ -19,19 +19,29 @@ const AppContent: React.FC = () => {
     }
   }, []);
 
-  if (currentPage === 'invoice')  return <InvoicePage />;
-  if (currentPage === 'admin')    return <AdminPage />;
-  if (currentPage === 'about')    return <AboutPage />;
-  if (currentPage === 'safety')   return <SafetyPage />;
-  if (currentPage === 'products') return <ProductsPage />;
-  if (currentPage === 'contact')  return <ContactPage />;
-  return <HomePage />;
+  const isAdmin = currentPage === 'admin';
+
+  const renderPage = () => {
+    if (currentPage === 'invoice')  return <InvoicePage />;
+    if (currentPage === 'admin')    return <AdminPage />;
+    if (currentPage === 'about')    return <AboutPage />;
+    if (currentPage === 'safety')   return <SafetyPage />;
+    if (currentPage === 'products') return <ProductsPage />;
+    if (currentPage === 'contact')  return <ContactPage />;
+    return <HomePage />;
+  };
+
+  return (
+    <>
+      {!isAdmin && <LegalNoticePopup />}
+      {renderPage()}
+    </>
+  );
 };
 
 function App() {
   return (
     <AppProvider>
-      <LegalNoticePopup />
       <AppContent />
     </AppProvider>
   );
