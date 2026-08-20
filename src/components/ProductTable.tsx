@@ -6,11 +6,7 @@ import { useApp } from '../context/AppContext';
 // Set the order you want categories to appear in.
 // Names below MUST match your product.category values EXACTLY.
 const CATEGORY_PRIORITY = [
-  '7CM SPARKLERS',
-  '10CM SPARKLERS',
-  '15CM SPARKLERS',
-  '30CM SPARKLERS',
-  '50CM SPARKLERS',
+  'SPARKLERS',
   'ONE SOUND CRACKERS',
   'BIJILI CRACKERS',
   'ROCKETS',

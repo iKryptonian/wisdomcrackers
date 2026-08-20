@@ -464,7 +464,7 @@ const InvoicePage: React.FC = () => {
                     fontWeight: 'bold', fontSize: 'clamp(13px, 3vw, 16px)', letterSpacing: 1,
                     whiteSpace: 'nowrap',
                   }}>
-                    ESTIMATE
+                    INVOICE
                   </span>
                   <span style={{
                     position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',

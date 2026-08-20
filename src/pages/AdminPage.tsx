@@ -15,7 +15,7 @@ const emptyForm = {
 const AdminPage: React.FC = () => {
   const { refreshProducts, setCurrentPage } = useApp();
 
-  const [authed, setAuthed]         = useState(false);
+  const [authed, setAuthed]         = useState(() => sessionStorage.getItem('adminAuthed') === 'true');
   const [password, setPassword]     = useState('');
   const [pwError, setPwError]       = useState('');
 
@@ -40,9 +40,17 @@ const AdminPage: React.FC = () => {
 
 
   const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) { setAuthed(true); setPwError(''); }
-    else setPwError('Incorrect password');
-  }; 
+    if (password === ADMIN_PASSWORD) {
+      setAuthed(true);
+      sessionStorage.setItem('adminAuthed', 'true');
+      setPwError('');
+    } else setPwError('Incorrect password');
+  };
+
+  const handleLogout = () => {
+    setAuthed(false);
+    sessionStorage.removeItem('adminAuthed');
+  };
 
   useEffect(() => { if (authed) loadProducts(); }, [authed]);
 
@@ -88,10 +96,16 @@ const AdminPage: React.FC = () => {
     setUploading(true);
     const ext  = imageFile.name.split('.').pop();
     const path = `products/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('product-images').upload(path, imageFile);
+    const { error } = await supabase.storage
+      .from('product-images')
+      .upload(path, imageFile, { upsert: true });
     setUploading(false);
-    if (error) throw error;
+    if (error) {
+      console.error('Storage upload failed:', error);
+      throw new Error('Image upload failed: ' + error.message);
+    }
     const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+    console.log('Uploaded image URL:', data.publicUrl);
     return data.publicUrl;
   };
 
@@ -118,24 +132,42 @@ const AdminPage: React.FC = () => {
         actual_price: Number(form.actual_price), price: Number(form.price),
         unit: form.unit, category: form.category,
       };
+      console.log('Saving payload:', payload);
+
+      let saveError;
       if (editId !== null) {
-        await supabase.from('products').update(payload).eq('id', editId);
+        const { error } = await supabase.from('products').update(payload).eq('id', editId);
+        saveError = error;
       } else {
-        await supabase.from('products').insert(payload);
+        const { error } = await supabase.from('products').insert(payload);
+        saveError = error;
       }
+
+      if (saveError) {
+        console.error('Save failed:', saveError);
+        alert('Failed to save: ' + saveError.message);
+        setSaving(false);
+        return;
+      }
+
       setShowForm(false);
       await loadProducts();
       refreshProducts();
-      window.location.hash = '';
-      window.location.reload();
-    } catch (e) { console.error(e); }
+    } catch (e: any) {
+      console.error(e);
+      alert('Error: ' + e.message);
+    }
     setSaving(false);
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this product?')) return;
     setDeleting(id);
-    await supabase.from('products').delete().eq('id', id);
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) {
+      console.error('Delete failed:', error);
+      alert('Failed to delete: ' + error.message);
+    }
     setDeleting(null);
     await loadProducts();
     await refreshProducts();
@@ -189,10 +221,16 @@ const AdminPage: React.FC = () => {
             </p>
           </div>
         </div>
-        <button onClick={openAdd}
-          className="flex items-center gap-1.5 bg-white text-orange-600 font-bold px-4 py-2 rounded-lg text-sm hover:bg-orange-200">
-          <Plus className="w-4 h-4" /> Add Product
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={openAdd}
+            className="flex items-center gap-1.5 bg-white text-orange-600 font-bold px-4 py-2 rounded-lg text-sm hover:bg-orange-200">
+            <Plus className="w-4 h-4" /> Add Product
+          </button>
+          <button onClick={handleLogout}
+            className="text-xs text-orange-200 underline hover:text-white px-2">
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -228,7 +266,7 @@ const AdminPage: React.FC = () => {
                     </button>
                 </div>
             </div>
-        ) : filtered.map(p => (
+        ) : filtered.map((p, index) => (
           <div key={p.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="relative h-40 bg-gray-100">
               <img src={p.image} alt={p.name}
@@ -237,6 +275,9 @@ const AdminPage: React.FC = () => {
               />
               <span className="absolute top-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
                 {p.category}
+              </span>
+              <span className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
+                #{index + 1}
               </span>
             </div>
             <div className="p-3">
@@ -339,4 +380,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage; 
+export default AdminPage;
