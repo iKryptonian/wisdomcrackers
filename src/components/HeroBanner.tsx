@@ -46,7 +46,7 @@ const HeroBanner: React.FC = () => {
 
       <section
         id="home"
-        className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-orange-950 pt-20 pb-24 sm:pt-28 sm:pb-32"
+        className="relative min-h-[100vh] flex flex-col items-center justify-center overflow-hidden bg-orange-950 pt-20 pb-24 sm:pt-28 sm:pb-32"
         style={{
           background: 'linear-gradient(135deg, #e21f1f 10%, #df6c2a 30%, #ec4c0d 50%, #df6c2a 70%, #e21f1f 100%)',
         }}

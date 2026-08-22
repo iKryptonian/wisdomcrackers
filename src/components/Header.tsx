@@ -139,7 +139,7 @@ const Header: React.FC = () => {
               <ShoppingCart className="w-5 h-5 sm:w-7 sm:h-7" />
 
               {totalQty > 0 && (
-                <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] sm:text-xs font-bold h-4 min-w-4 sm:h-5 sm:min-w-5 px-1 sm:px-1.5 rounded-full flex items-center justify-center border-2 border-white whitespace-nowrap">
+                <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] sm:text-lg font-bold h-4 min-w-4 sm:h-7 sm:min-w-5 px-1 sm:px-1.5 rounded-full flex items-center justify-center border-2 border-white whitespace-nowrap">
                   {totalQty > 99 ? '99+' : totalQty}
                 </span>
               )}
