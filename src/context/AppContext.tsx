@@ -16,6 +16,8 @@ interface AppContextType {
   setIsCartOpen: (open: boolean) => void;
   isCheckoutOpen: boolean;
   setIsCheckoutOpen: (open: boolean) => void;
+  goToCheckout: () => void;
+  goToCart: () => void;
   customerDetails: CustomerDetails | null;
   setCustomerDetails: (details: CustomerDetails) => void;
   currentPage: PageView;
@@ -95,6 +97,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         window.history.back();
       }
     }
+  }, []);
+
+  // Atomic transition: cart -> checkout (avoids back()+pushState() race)
+  const goToCheckout = useCallback(() => {
+    setIsCartOpenState(false);
+    setIsCheckoutOpenState(true);
+    window.history.replaceState({ modal: 'checkout' }, '');
+  }, []);
+
+  // Atomic transition: checkout -> cart (avoids back()+pushState() race)
+  const goToCart = useCallback(() => {
+    setIsCheckoutOpenState(false);
+    setIsCartOpenState(true);
+    window.history.replaceState({ modal: 'cart' }, '');
   }, []);
 
   // Single popstate listener
@@ -228,6 +244,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsCartOpen,
       isCheckoutOpen,
       setIsCheckoutOpen,
+      goToCheckout,
+      goToCart,
       customerDetails,
       setCustomerDetails,
       currentPage,

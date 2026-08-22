@@ -9,7 +9,7 @@ const CartDrawer: React.FC = () => {
     isCartOpen, setIsCartOpen,
     cartItems, quantities, setQuantity,
     netTotal, totalSavings, overallTotal,
-    setIsCheckoutOpen,
+    goToCheckout,
   } = useApp();
 
   const [previewProduct, setPreviewProduct] = useState<any | null>(null);
@@ -36,9 +36,8 @@ const CartDrawer: React.FC = () => {
   }, [isCartOpen]);
 
   const handleConfirm = () => {
-    if (isBelowMinimum) return; 
-    setIsCartOpen(false);
-    setIsCheckoutOpen(true);
+    if (isBelowMinimum) return;
+    goToCheckout();
   };
 
   return (
@@ -190,7 +189,7 @@ const CartDrawer: React.FC = () => {
                           >
                             <Minus className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                           </button>
-                          <span className="w-5 sm:w-6 text-center text-[10px] sm:text-sm font-bold text-gray-700">{quantity}</span>
+                          <span className="w-5 sm:w-8 text-center text-[10px] sm:text-sm font-bold text-gray-700">{quantity}</span>
                           <button
                             onClick={() => setQuantity(product.id, quantity + 1)}
                             className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 hover:bg-green-200 text-green-700 flex items-center justify-center transition-colors"
@@ -268,7 +267,6 @@ const CartDrawer: React.FC = () => {
                         }
                       }, 300);
                     }}
-                    /* CHANGED: Removed the border and made it a solid orange button! */
                     className="w-full bg-orange-500 hover:bg-orange-700 text-white shadow-md font-bold py-2 sm:py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 text-[10px] sm:text-xs tracking-wide"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -280,7 +278,7 @@ const CartDrawer: React.FC = () => {
                 <button
                   onClick={handleConfirm}
                   disabled={isBelowMinimum}
-                  className={`w-full text-white font-bold py-2 sm:py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs tracking-wide ${
+                  className={`w-full text-white font-bold py-2 sm:py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-[10px] sm:text-lg tracking-wide ${
                     isBelowMinimum 
                       ? 'bg-gray-400 cursor-not-allowed shadow-none' 
                       : 'bg-gradient-to-r from-orange-700 to-orange-600 hover:from-orange-600 hover:to-orange-500 shadow-md shadow-orange-700/30 hover:shadow-orange-600/40 hover:scale-[1.01]'
